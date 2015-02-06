@@ -5,7 +5,7 @@
 ## 2. Get Steve's weight on the last day, and determine if he has lost any 
 ## weight compared to the first day
 ## 3. Among all 5 people, who weights the most on the first day? 
-## 4. Among all 5 people, who lost most weight (Lost Day vs. First Day)?
+## 4. Develop a function that calculates the average weight for a given day
 
 ## QUESTION 1
 ## Double check working directory and download the files from the specified URL
@@ -57,4 +57,25 @@ chub_day1 <-subset(day1_file, Weight==max(day1_file$Weight))
 chub_day1
 
 ## Steve weights the heaviest on Day 1, 225 lb
+
+## QUESTION 4
+## 
+mean_weight <-function(directory,day) {
+  all_files2 <-list.files(directory, full.names=TRUE)
+  tmp<-vector(mode="list", length=length(all_files2))
+  for (i in seq_along(all_files2)){
+    tmp[[i]]<-read.csv(all_files[[i]])
+  }
+  combined<-do.call(rbind,tmp)
+  subset_day <- subset(combined,Day==day)
+  mean(subset_day[,"Weight"], na.rm=TRUE)
+}
+
+mean_weight("diet_data",20)
+
+
+
+
+
+
 
