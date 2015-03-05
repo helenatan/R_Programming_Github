@@ -22,7 +22,7 @@ head(route_raw)
 # Remove the airports without IATA codes and rename the variables
 airport <-subset(airport_raw,airport_raw$V5!='')
 airport <-airport[,c('V3', 'V4', 'V5','V7','V8','V9')]
-colnames(airport) <- c("City", "Country", "IATA", "lantitude", "longitude", "altitude")
+colnames(airport) <- c("City", "Country", "IATA", "latitude", "longitude", "altitude")
 
 route <- route_raw[,c('V3', 'V5')]
 colnames(route) <- c("Departure", "Arrival")
@@ -43,7 +43,7 @@ dbDisconnect(conn)
 # Manipulate data in SQLite database
 conn <- dbConnect(RSQLite::SQLite(), dbname = "air.db")
 sqlcmd01 <- dbSendQuery(conn, " 
-                        select a.type, a.city as iata, a.frequency, b.city, b.country, b.lantitude, b.longitude
+                        select a.type, a.city as iata, a.frequency, b.city, b.country, b.latitude, b.longitude
                         from (select  'depart' as type, departure as city, count(departure) as frequency
                         from route
                         group by departure
@@ -56,10 +56,10 @@ top <- fetch(sqlcmd01, n = -1)
 
 
 sqlcmd02 <- dbSendQuery(conn, " 
-                        select route.rowid as id, route.departure as point, airport.lantitude as lantitude, airport.longitude as longitude
+                        select route.rowid as id, route.departure as point, airport.latitude as latitude, airport.longitude as longitude
                         from route left join airport on route.departure = airport.iata where airport.country='Canada'
                         union 
-                        select route.rowid as id, route.arrival as point, airport.lantitude as lantitude, airport.longitude as longitude
+                        select route.rowid as id, route.arrival as point, airport.latitude as latitude, airport.longitude as longitude
                         from route left join airport on route.arrival = airport.iata where airport.country='Canada'
                         order by id
                         ;")
@@ -81,9 +81,9 @@ ranked <-fetch(sqlcmd03, n=-1)
 
 # Draw the flight routes and the airports on Google map
 ggmap(get_googlemap(center = 'canada', zoom = 3, maptype = 'roadmap'), extent = 'device') +
-geom_line(data = combine, aes(x = longitude, y = lantitude, group = id), size = 1,
+geom_line(data = combine, aes(x = longitude, y = latitude, group = id), size = 1,
           alpha = 0.05,color = 'red4') +
-geom_point(data = top, aes(x = longitude, y = lantitude, size = frequency), colour = "blue", alpha = 0.3) +
+geom_point(data = top, aes(x = longitude, y = latitude, size = frequency), colour = "blue", alpha = 0.3) +
 scale_size(range=c(0,15))
 
 ## What are the top 5 airports in Canada in terms of flight frequency?
