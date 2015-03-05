@@ -90,5 +90,5 @@ scale_size(range=c(0,15))
 ranked
 
 ## What is the most northern airport in Canada and where is it?
-subset(top,top$lantitude==max(top$lantitude))
+subset(top,top$latitude==max(top$latitude))
 
